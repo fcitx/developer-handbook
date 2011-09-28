@@ -1,0 +1,104 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Register a addon in Fcitx</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-addon.html" title="Part II. Addon">
+<link rel="prev" href="part-addon.html" title="Part II. Addon">
+<link rel="next" href="article-configurable-addon.html" title="Make addon configurable">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Register a addon in Fcitx</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="part-addon.html">Prev</a> </td>
+<th width="60%" align="center">Part II. Addon</th>
+<td width="20%" align="right"> <a accesskey="n" href="article-configurable-addon.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="Register a addon in Fcitx">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-register-addon"></a>Register a addon in Fcitx</h2></div></div>
+<hr>
+</div>
+<p>
+            Each addon needs a configuration file. A common configuration
+            file is like this one, fcitx-pinyin.conf.in.
+            </p>
+<pre class="programlisting">
+[Addon]
+Name=fcitx-pinyin
+_GeneralName=Pinyin
+_Comment=Simple Pinyin support for Fcitx
+Category=InputMethod
+Enabled=True
+Library=fcitx-pinyin.so
+Type=SharedLibrary
+SubConfig=Shuang Pin Schema:native:pinyin/sp.dat,Symbol:native:pinyin/pySym.mb,fcitx:domain
+            </pre>
+<p>
+        </p>
+<p>
+            All Fcitx config file are using ini style format, GeneralName and 
+            Comment are I18NString that can be translated into other languages.
+            Here is a example configuration file of fcitx-pinyin merged with translation.
+        </p>
+<pre class="programlisting">
+[Addon]
+Name=fcitx-pinyin
+GeneralName=Pinyin
+GeneralName[zh_CN]=拼音
+Comment=Simple Pinyin support for Fcitx
+Comment[zh_CN]=Fcitx 简单的拼音支持
+Category=InputMethod
+Enabled=True
+Library=fcitx-pinyin.so
+Type=SharedLibrary
+SubConfig=Shuang Pin Schema:native:pinyin/sp.dat,Symbol:native:pinyin/pySym.mb,fcitx:domain
+        </pre>
+<p>
+            fcitx_add_addon_conf_file(CONFFILENAME) can be used in CMakeLists.txt
+            to automatically merge the translation into this file. And use 
+            extract_fcitx_addon_conf_postring() to extract strings of those conf.in files
+            from POTFILES.in.
+        </p>
+<p>
+            For addon which type is SharedLibrary, each different category requires export a different
+            symbol.
+            </p>
+<pre class="programlisting">
+FcitxFrontend frontend; /* for frontend */
+FcitxIMClass ime; /* for input method */
+FcitxModule module; /* for module */
+FcitxUI ui; /* for user interface */
+            </pre>
+<p>
+            Each of this symbol consist a set of callback functions.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="part-addon.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-addon.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="article-configurable-addon.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Part II. Addon </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Make addon configurable</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

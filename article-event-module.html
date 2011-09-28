@@ -1,0 +1,90 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Event Module</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-module.html" title="Part V. Module">
+<link rel="prev" href="part-module.html" title="Part V. Module">
+<link rel="next" href="article-other-module.html" title="Other Module">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Event Module</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="part-module.html">Prev</a> </td>
+<th width="60%" align="center">Part V. Module</th>
+<td width="20%" align="right"> <a accesskey="n" href="article-other-module.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="Event Module">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-event-module"></a>Event Module</h2></div></div>
+<hr>
+</div>
+<p>
+            Event based Modules in Fcitx are using fd to notify the main-loop whether
+            there is new event or not. Following definition is defined in fcitx/module.h.
+            </p>
+<pre class="programlisting">
+typedef struct _FcitxModule
+{
+    /**
+     * @brief construction function
+     */
+    void* (*Create)(struct _FcitxInstance* instance);
+    /**
+     * @brief set main loop watch fd, no need to implement
+     */
+    void (*SetFD)(void*);
+    /**
+     * @brief main loop event handle, no need to implement
+     */
+    void (*ProcessEvent)(void*);
+    /**
+     * @brief destruct function
+     */
+    void (*Destroy)(void*);
+    /**
+     * @brief reload config, no need to implement
+     */
+    void (*ReloadConfig)(void*);
+} FcitxModule;
+            </pre>
+<p>
+        </p>
+<p>
+            After select from multiple fd, the ProcessEvent will be called and modules will process there
+            own event.
+        </p>
+<p>
+            Module need to update rfds, wfds, efds in FcitxInstance and set the maxfd member in FcitxInstance,
+            After modules process all events, all three fd_set will be set by FD_ZERO
+            and SetFD will be called to set them.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="part-module.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-module.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="article-other-module.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Part V. Module </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Other Module</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

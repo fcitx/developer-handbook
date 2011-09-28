@@ -1,0 +1,82 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Input Method</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-inputmethod.html" title="Part IV. Input Method">
+<link rel="prev" href="part-inputmethod.html" title="Part IV. Input Method">
+<link rel="next" href="article-inputmethod-work.html" title="The things that a input method should and should not do.">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Input Method</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="part-inputmethod.html">Prev</a> </td>
+<th width="60%" align="center">Part IV. Input Method</th>
+<td width="20%" align="right"> <a accesskey="n" href="article-inputmethod-work.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="Input Method">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-inputmethod"></a>Input Method</h2></div></div>
+<hr>
+</div>
+<p>
+            Input Methods are most important
+            components of Fcitx. It will process key event, and update the preedit string
+            and set candidate words.
+        </p>
+<p>
+            Every single input method addon can add more than one input method
+            to Fcitx. Like fcitx-table, it will load table configuration files first,
+            then add corresponding table input method.
+        </p>
+<p>
+            Input methods are registered via FcitxRegisterIM. It will provide
+            two strings, one is Name, which will be displayed directly to user.
+            If addon want to have Name translated, it should do the translation before pass Name to
+            FcitxRegisterIM. Icon Name is a property that will be used in UI
+            display, the actual usage for Icon Name depends on the UI Module
+            implementation. For fcitx-classic-ui, it will be used as the original
+            png file name; for fcitx-kimpanel-ui, it will be used with a "fcitx-"
+            prefix and look for icon in system icon themes.
+        </p>
+<p>
+            Init will be called when a input method being switched to. ResetIM is
+            usually being called in ResetInput. DoInput is the key function, which
+            process the key event. And if the return state is IRV_DISPLAY_CANDWORDS,
+            the GetCandWords will be called. Save will be called when fcitx want to 
+            save the data, usually when logout.
+        </p>
+<p>
+            Priority control the order of input methods, each IM should take care of
+            it's own priority value. If a priority value less than or equal to zero, this
+            input method will not be registered to fcitx.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="part-inputmethod.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-inputmethod.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="article-inputmethod-work.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Part IV. Input Method </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> The things that a input method should and should not do.</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

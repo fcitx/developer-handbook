@@ -1,0 +1,68 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Architecture of Input Method Framework</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-architecture.html" title="Part I. Architecture">
+<link rel="prev" href="part-architecture.html" title="Part I. Architecture">
+<link rel="next" href="part-addon.html" title="Part II. Addon">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Architecture of Input Method Framework</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="part-architecture.html">Prev</a> </td>
+<th width="60%" align="center">Part I. Architecture</th>
+<td width="20%" align="right"> <a accesskey="n" href="part-addon.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="Architecture of Input Method Framework">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-architecture"></a>Architecture of Input Method Framework</h2></div></div>
+<hr>
+</div>
+<p>
+            All Input Method Frameworks have a very simple architecture, basically they
+            receive Keyboard Event from Application, which can be also called "Client",
+            then try to do some job with this Keyboard Event, like simply letting it pass,
+            or to block it and commit a string to the application.
+        </p>
+<p>
+            The way that Fcitx handles the keyboard event can be separated into 4
+            phases, PreInput, DoInput, PostInput, and Process Hotkey. All the Input
+            Method, such as "Chinese Pinyin", will be called at the DoInput Phase.
+        </p>
+<p>
+            <a class="link" href="part-addon.html" title="Part II. Addon">Fcitx Addon</a> can be separated into 4 categories, Frontend, Input Method,
+            Module, and User Interface. <a class="link" href="part-frontend.html" title="Part III. Frontend">Frontend</a> receives key event and pass it to
+            Fcitx; <a class="link" href="part-inputmethod.html" title="Part IV. Input Method">Input Method</a> helps people input their Language with keyboard; 
+            <a class="link" href="part-module.html" title="Part V. Module">Module</a> can do anything via registering hooks;
+            <a class="link" href="part-userinterface.html" title="Part VI. User Interface">User interface</a> will display the all necessary elements on the screen.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="part-architecture.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-architecture.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="part-addon.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Part I. Architecture </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Part II. Addon</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

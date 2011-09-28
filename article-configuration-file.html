@@ -1,0 +1,78 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Configuration File format</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-convention.html" title="Part VII. Convention">
+<link rel="prev" href="article-file-and-directory.html" title="File and Directory Convention">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Configuration File format</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="article-file-and-directory.html">Prev</a> </td>
+<th width="60%" align="center">Part VII. Convention</th>
+<td width="20%" align="right"> </td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="Configuration File format">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-configuration-file"></a>Configuration File format</h2></div></div>
+<hr>
+</div>
+<p>
+            A Ini file in Fcitx contains at least one group, each group contains several options.
+            A group is defined in "[GroupName]" format, an options is defined by "Key=Value".
+        </p>
+<p>
+            All configuration file should have a configuration description file in following format.
+            </p>
+<pre class="programlisting">
+                [GroupName/OptionName]
+                Type=Option Type
+                Description=Description String
+                DefaultValue=value
+                
+                [DescriptionFile]
+                LocaleDomain=Domain
+            </pre>
+<p>
+            DefaultValue is optional, but if configuration file need to be generated from nothing,
+            all options should have a default value.
+        </p>
+<p>
+            The option value type can be "File", "Font", "Enum", "String", "I18NString", "Boolean", "Color",
+            "Integer".
+        </p>
+<p>
+            All the types will be display in the configuration tool in corresponding way, "Boolean" will be
+            a checkbox, "String" will be a textbox, etc.
+        </p>
+<p>
+            "Description" is translatable, and the string should lies in the defined domain.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="article-file-and-directory.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-convention.html">Up</a></td>
+<td width="40%" align="right"> </td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">File and Directory Convention </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> </td>
+</tr>
+</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Implement user interface</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-userinterface.html" title="Part VI. User Interface">
+<link rel="prev" href="part-userinterface.html" title="Part VI. User Interface">
+<link rel="next" href="article-use-user-interface-elements.html" title="Using user interface elements in module">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Implement user interface</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="part-userinterface.html">Prev</a> </td>
+<th width="60%" align="center">Part VI. User Interface</th>
+<td width="20%" align="right"> <a accesskey="n" href="article-use-user-interface-elements.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="Implement user interface">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-implement-userinterface"></a>Implement user interface</h2></div></div>
+<hr>
+</div>
+<p>
+            Unlike Frontend, Input Method, and Module, there can be only
+            one user interface running.
+            way.
+        </p>
+<p>
+            If there is no special requirement, it's not recommended
+            to implement a new user interface. There are already three existing User Interface
+            Addons in Fcitx, one is fcitx-classic-ui, which provides skin support and uses
+            cairo, pango, and xlib for rendering; another one is fcitx-kimpanel-ui, which
+            uses kimpanel protocol via DBus, and it can provides native look-feeling
+            under with kdeplasma-addons-kimpanel, and even more, can provides advance
+            skin support with kimtoy; The third one is fcitx-light-ui, which only use
+            Xft and Xlib for rendering, it intends to require least dependencies and
+            achieve better rendering spend on old machine.
+        </p>
+<p>
+            In order to implement a new user interface, it would be better to use a kimpanel
+            compatible protocol, but not to write a fcitx one, since kimpanel can also benefits
+            other input framework, scim and ibus.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="part-userinterface.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-userinterface.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="article-use-user-interface-elements.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Part VI. User Interface </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Using user interface elements in module</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

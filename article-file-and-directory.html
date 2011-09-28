@@ -1,0 +1,76 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>File and Directory Convention</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-convention.html" title="Part VII. Convention">
+<link rel="prev" href="part-convention.html" title="Part VII. Convention">
+<link rel="next" href="article-configuration-file.html" title="Configuration File format">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">File and Directory Convention</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="part-convention.html">Prev</a> </td>
+<th width="60%" align="center">Part VII. Convention</th>
+<td width="20%" align="right"> <a accesskey="n" href="article-configuration-file.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="File and Directory Convention">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-file-and-directory"></a>File and Directory Convention</h2></div></div>
+<hr>
+</div>
+<p>
+            Fcitx have two prefixes of directory, one is named "PREFIX", which is configured
+            during building, the other is "USERPREFIX", which is based on XDG environment
+            variable. Normally, PREFIX is /usr/share/fcitx, and USERPREFIX is ~/.config/fcitx
+        </p>
+<p>
+            In order to let Fcitx Configuration Tool find configuration files automatically,
+            and to let Fcitx load addon correctly, addon need to put its configuration files under
+            correct path with correct name.
+        </p>
+<p>
+            Each addon has a configuration file, and it should be installed under PREFIX/addon/.
+            This configuration file defines its name, category, library name, type, and priority.
+            Filename need to be addon-name.conf.
+        </p>
+<p>
+            If addon can be configured with various options, it need a configuration description file,
+            which should be installed under PREFIX/configdesc/, with name [addon-name].desc.
+            The corresponding configuration file should be placed under USERPREFIX/conf/, with
+            the name [addon-name].config.
+        </p>
+<p>
+            There are two case If addon has some data file to load/save. If it only has
+            one file, it can place the data file under PREFIX/data. If addon have more than one data file,
+            it would be better to create a separate directory to place them.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="part-convention.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-convention.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="article-configuration-file.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Part VII. Convention </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Configuration File format</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

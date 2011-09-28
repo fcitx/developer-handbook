@@ -1,0 +1,105 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Inter Module function call</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-module.html" title="Part V. Module">
+<link rel="prev" href="article-other-module.html" title="Other Module">
+<link rel="next" href="article-existing-module.html" title="Existing Useful Module">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Inter Module function call</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="article-other-module.html">Prev</a> </td>
+<th width="60%" align="center">Part V. Module</th>
+<td width="20%" align="right"> <a accesskey="n" href="article-existing-module.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="Inter Module function call">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-inter-module-function"></a>Inter Module function call</h2></div></div>
+<hr>
+</div>
+<p>
+            In order to reusing some common code, Fcitx provides a mechanism to do inter module function
+            call. Although it's call inter module function, but all kinds of addon can provide such functions.
+        </p>
+<p>
+            If a module wants to register some inter module function, first it need a header defines correct
+            macro. Here is part of macro defined in fcitx/module/x11stuff.h
+        </p>
+<pre class="programlisting">
+#define FCITX_X11_NAME "fcitx-x11"
+#define FCITX_X11_GETDISPLAY 0
+#define FCITX_X11_GETDISPLAY_RETURNTYPE Display*
+#define FCITX_X11_ADDXEVENTHANDLER 1
+#define FCITX_X11_ADDXEVENTHANDLER_RETURNTYPE void
+#define FCITX_X11_REMOVEXEVENTHANDLER 2
+#define FCITX_X11_REMOVEXEVENTHANDLER_RETURNTYPE void
+#define FCITX_X11_FINDARGBVISUAL 3
+#define FCITX_X11_FINDARGBVISUAL_RETURNTYPE Visual*
+#define FCITX_X11_INITWINDOWATTR 4
+#define FCITX_X11_INITWINDOWATTR_RETURNTYPE void
+#define FCITX_X11_SETWINDOWPROP 5
+#define FCITX_X11_SETWINDOWPROP_RETURNTYPE void
+#define FCITX_X11_GETSCREENSIZE 6
+#define FCITX_X11_GETSCREENSIZE_RETURNTYPE void
+#define FCITX_X11_MOUSECLICK 7
+#define FCITX_X11_MOUSECLICK_RETURNTYPE void
+#define FCITX_X11_ADDCOMPOSITEHANDLER 8
+#define FCITX_X11_ADDCOMPOSITEHANDLER_RETURNTYPE void
+        </pre>
+<p>
+            fcitx_add_addon_header is provided by FcitxMacro.cmake to get this header installed to
+            the correct place.
+        </p>
+<p>
+            All functions have the same interface, like this:
+        </p>
+<pre class="programlisting">
+void* X11GetDisplay(void* arg, FcitxModuleFunctionArg args);
+        </pre>
+<p>
+            For any addon need to call a inter module function
+            it should add that module as dependency in the configuration file.
+            Addon is loaded or not can be also checked at runtime via GetAddonByName.
+        </p>
+<p>
+            If addon want to call a function in other module, it should use InvokeFunction macro
+            defined in fcitx/module.h.
+        </p>
+<pre class="programlisting">
+InvokeFunction(instance, FCITX_X11, GETDISPLAY, arg);
+        </pre>
+<p>
+            FcitxModuleFunctionArg provides ten void* slot for passing argument, which is
+            enough for passing arguments.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="article-other-module.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-module.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="article-existing-module.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Other Module </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Existing Useful Module</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

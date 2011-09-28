@@ -1,0 +1,484 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Fcitx Developer Handbook</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"><meta name="description" content="Fcitx is an open source input method released under GPLv2."></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div lang="en_US" class="book" title="Fcitx Developer Handbook"><div class="titlepage"><div><div><h1 class="title"><a name="id4457835"></a>Fcitx Developer Handbook</h1></div><div><p class="copyright">Copyright © 2011 CSSlayer</p></div><div><div class="abstract" title="Abstract"><p class="title"><b>Abstract</b></p><p>Fcitx is an open source input method released under GPLv2.</p></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="part"><a href="#part-architecture">I. Architecture</a></span></dt><dd><dl><dt><span class="article"><a href="#article-architecture">Architecture of Input Method Framework</a></span></dt></dl></dd><dt><span class="part"><a href="#part-addon">II. Addon</a></span></dt><dd><dl><dt><span class="article"><a href="#article-register-addon">Register a addon in Fcitx</a></span></dt><dt><span class="article"><a href="#article-configurable-addon">Make addon configurable</a></span></dt></dl></dd><dt><span class="part"><a href="#part-frontend">III. Frontend</a></span></dt><dd><dl><dt><span class="article"><a href="#article-implement-frontend">Implement a Frontend</a></span></dt></dl></dd><dt><span class="part"><a href="#part-inputmethod">IV. Input Method</a></span></dt><dd><dl><dt><span class="article"><a href="#article-inputmethod">Input Method</a></span></dt><dt><span class="article"><a href="#article-inputmethod-work">The things that a input method should and should not do.</a></span></dt></dl></dd><dt><span class="part"><a href="#part-module">V. Module</a></span></dt><dd><dl><dt><span class="article"><a href="#article-event-module">Event Module</a></span></dt><dt><span class="article"><a href="#article-other-module">Other Module</a></span></dt><dt><span class="article"><a href="#article-inter-module-function">Inter Module function call</a></span></dt><dt><span class="article"><a href="#article-existing-module">Existing Useful Module</a></span></dt><dd><dl><dt><span class="section"><a href="#section-dbus-module">1. DBus</a></span></dt><dt><span class="section"><a href="#section-x11-module">2. X11</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#part-userinterface">VI. User Interface</a></span></dt><dd><dl><dt><span class="article"><a href="#article-implement-userinterface">Implement user interface</a></span></dt><dt><span class="article"><a href="#article-use-user-interface-elements">Using user interface elements in module</a></span></dt><dt><span class="article"><a href="#article-use-client-side-userinterface">Using client side user interface</a></span></dt></dl></dd><dt><span class="part"><a href="#part-convention">VII. Convention</a></span></dt><dd><dl><dt><span class="article"><a href="#article-file-and-directory">File and Directory Convention</a></span></dt><dt><span class="article"><a href="#article-configuration-file">Configuration File format</a></span></dt></dl></dd></dl></div><div class="list-of-tables"><p><b>List of Tables</b></p><dl><dt>1. <a href="#id4523808">Standard Input Window Layout</a></dt></dl></div><div class="part" title="Part I. Architecture"><div class="titlepage"><div><div><h1 class="title"><a name="part-architecture"></a>Part I. Architecture</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="article"><a href="#article-architecture">Architecture of Input Method Framework</a></span></dt></dl></div><div class="article" title="Architecture of Input Method Framework"><div class="titlepage"><div><div><h2 class="title"><a name="article-architecture"></a>Architecture of Input Method Framework</h2></div></div><hr></div><p>
+            All Input Method Frameworks have a very simple architecture, basically they
+            receive Keyboard Event from Application, which can be also called "Client",
+            then try to do some job with this Keyboard Event, like simply letting it pass,
+            or to block it and commit a string to the application.
+        </p><p>
+            The way that Fcitx handles the keyboard event can be separated into 4
+            phases, PreInput, DoInput, PostInput, and Process Hotkey. All the Input
+            Method, such as "Chinese Pinyin", will be called at the DoInput Phase.
+        </p><p>
+            <a class="link" href="#part-addon" title="Part II. Addon">Fcitx Addon</a> can be separated into 4 categories, Frontend, Input Method,
+            Module, and User Interface. <a class="link" href="#part-frontend" title="Part III. Frontend">Frontend</a> receives key event and pass it to
+            Fcitx; <a class="link" href="#part-inputmethod" title="Part IV. Input Method">Input Method</a> helps people input their Language with keyboard; 
+            <a class="link" href="#part-module" title="Part V. Module">Module</a> can do anything via registering hooks;
+            <a class="link" href="#part-userinterface" title="Part VI. User Interface">User interface</a> will display the all necessary elements on the screen.
+        </p></div></div><div class="part" title="Part II. Addon"><div class="titlepage"><div><div><h1 class="title"><a name="part-addon"></a>Part II. Addon</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="article"><a href="#article-register-addon">Register a addon in Fcitx</a></span></dt><dt><span class="article"><a href="#article-configurable-addon">Make addon configurable</a></span></dt></dl></div><div class="article" title="Register a addon in Fcitx"><div class="titlepage"><div><div><h2 class="title"><a name="article-register-addon"></a>Register a addon in Fcitx</h2></div></div><hr></div><p>
+            Each addon needs a configuration file. A common configuration
+            file is like this one, fcitx-pinyin.conf.in.
+            </p><pre class="programlisting">
+[Addon]
+Name=fcitx-pinyin
+_GeneralName=Pinyin
+_Comment=Simple Pinyin support for Fcitx
+Category=InputMethod
+Enabled=True
+Library=fcitx-pinyin.so
+Type=SharedLibrary
+SubConfig=Shuang Pin Schema:native:pinyin/sp.dat,Symbol:native:pinyin/pySym.mb,fcitx:domain
+            </pre><p>
+        </p><p>
+            All Fcitx config file are using ini style format, GeneralName and 
+            Comment are I18NString that can be translated into other languages.
+            Here is a example configuration file of fcitx-pinyin merged with translation.
+        </p><pre class="programlisting">
+[Addon]
+Name=fcitx-pinyin
+GeneralName=Pinyin
+GeneralName[zh_CN]=&#25340;&#38899;
+Comment=Simple Pinyin support for Fcitx
+Comment[zh_CN]=Fcitx &#31616;&#21333;&#30340;&#25340;&#38899;&#25903;&#25345;
+Category=InputMethod
+Enabled=True
+Library=fcitx-pinyin.so
+Type=SharedLibrary
+SubConfig=Shuang Pin Schema:native:pinyin/sp.dat,Symbol:native:pinyin/pySym.mb,fcitx:domain
+        </pre><p>
+            fcitx_add_addon_conf_file(CONFFILENAME) can be used in CMakeLists.txt
+            to automatically merge the translation into this file. And use 
+            extract_fcitx_addon_conf_postring() to extract strings of those conf.in files
+            from POTFILES.in.
+        </p><p>
+            For addon which type is SharedLibrary, each different category requires export a different
+            symbol.
+            </p><pre class="programlisting">
+FcitxFrontend frontend; /* for frontend */
+FcitxIMClass ime; /* for input method */
+FcitxModule module; /* for module */
+FcitxUI ui; /* for user interface */
+            </pre><p>
+            Each of this symbol consist a set of callback functions.
+        </p></div><div class="article" title="Make addon configurable"><div class="titlepage"><div><div><h2 class="title"><a name="article-configurable-addon"></a>Make addon configurable</h2></div></div><hr></div><p>
+            If addon need a multi option configuration file, addon should provides a configuration description file first.
+            The filename need to same with the addon name.
+        </p><p>
+            If addon requires a series of sub-configuration file, or some simple text file, the addon configuration file
+            need to contains SubConfig key to list wildcard file name.
+            </p><pre class="programlisting">
+[Addon]
+Name=fcitx-table
+_GeneralName=Table
+_Comment=Table Input Method for Fcitx
+Category=InputMethod
+Enabled=True
+Library=fcitx-table.so
+Type=SharedLibrary
+Dependency=fcitx-pinyin,fcitx-punc
+SubConfig=Table:configfile:table/*.conf:table.desc,fcitx:domain
+            </pre><p>
+            fcitx-table has several table configuration files, SubConfig is defined in following format.
+            </p><pre class="programlisting">
+            SubConfig=SubConfig1,Subconfig2,...,Subconfig3
+            </pre><p>
+            Each SubConfig is defined in following format:
+            </p><pre class="programlisting">
+            Name:type:description
+            </pre><p>
+            Currently, type can be "configfile", "native", or "domain". "native" defines a simple text
+            filename in description, which cannot have wildcard in filename. Description of "configfile"
+            contains filename with wildcard and configuration description file name. "domain" defines
+            gettext domain of this module. Names of "configfile" and "native" are translatable, translation should
+            live in the "domain" defined by subconfig.
+        </p></div></div><div class="part" title="Part III. Frontend"><div class="titlepage"><div><div><h1 class="title"><a name="part-frontend"></a>Part III. Frontend</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="article"><a href="#article-implement-frontend">Implement a Frontend</a></span></dt></dl></div><div class="article" title="Implement a Frontend"><div class="titlepage"><div><div><h2 class="title"><a name="article-implement-frontend"></a>Implement a Frontend</h2></div></div><hr></div><p>
+            Frontend is a library that communicates with the client, and processes
+            the key input from client, and sends string to client.
+        </p><p>
+            Currently, there are 13 functions need to be implemented for a Frontend.
+            (Defined in fcitx/frontend.h)
+            </p><pre class="programlisting">
+void* (*Create)(struct _FcitxInstance*, int frontendindex);
+boolean (*Destroy)(void *arg);
+void (*CreateIC)(void* arg, FcitxInputContext*, void* priv);
+boolean (*CheckIC)(void* arg, FcitxInputContext* arg1, void* arg2);
+void (*DestroyIC) (void* arg, FcitxInputContext *context);
+void (*EnableIM)(void* arg, FcitxInputContext* arg1);
+void (*CloseIM)(void* arg, FcitxInputContext* arg1);
+void (*CommitString)(void* arg, FcitxInputContext* arg1, char* arg2);
+void (*ForwardKey)(void* arg, FcitxInputContext* arg1, FcitxKeyEventType event, FcitxKeySym sym, unsigned int state);
+void (*SetWindowOffset)(void* arg, FcitxInputContext* ic, int x, int y);
+void (*GetWindowPosition)(void* arg, FcitxInputContext* ic, int* x, int* y);
+void (*UpdatePreedit)(void* arg, FcitxInputContext* ic);
+void (*UpdateClientSideUI)(void* arg, FcitxInputContext* ic);
+            </pre><p>
+        </p><p>
+            Frontend needs to manage its input contexts. A client at least
+            has one input context with some private data, which can identify
+            the specific input context. The CreateIC and DestroyIC are functions
+            that create and destroy private input context data. A input context usually has a private unique id,
+            which will be used in CheckIC to find the specific input context.
+        </p><p>
+            Some input contexts hold a state at the client side, which indicates
+            whether this input context is active or not. EnableIM and 
+            CloseIM will be called when  fcitx want to enable or disable
+            input context from Fcitx side.
+        </p><p>
+            CommitString and ForwardKey will be called  when
+            fcitx wants to commit string to client window, or forward a key event
+            to client window.
+        </p><p>
+            SetWindowOffset and GetWindowOffset is to set and get the client cursor position.
+        </p><p>
+            UpdatePreedit and UpdateClientSideUI will be called
+            when UI elements, like preedit string, or any ui element update.
+            These two function are especially for input context with capacity 
+            CAPACITY_PREEDIT or CAPACITY_CLIENT_SIDE_UI. Only when a input context
+            claims to support opposite capacity, these two function will be 
+            used.
+        </p></div></div><div class="part" title="Part IV. Input Method"><div class="titlepage"><div><div><h1 class="title"><a name="part-inputmethod"></a>Part IV. Input Method</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="article"><a href="#article-inputmethod">Input Method</a></span></dt><dt><span class="article"><a href="#article-inputmethod-work">The things that a input method should and should not do.</a></span></dt></dl></div><div class="article" title="Input Method"><div class="titlepage"><div><div><h2 class="title"><a name="article-inputmethod"></a>Input Method</h2></div></div><hr></div><p>
+            Input Methods are most important
+            components of Fcitx. It will process key event, and update the preedit string
+            and set candidate words.
+        </p><p>
+            Every single input method addon can add more than one input method
+            to Fcitx. Like fcitx-table, it will load table configuration files first,
+            then add corresponding table input method.
+        </p><p>
+            Input methods are registered via FcitxRegisterIM. It will provide
+            two strings, one is Name, which will be displayed directly to user.
+            If addon want to have Name translated, it should do the translation before pass Name to
+            FcitxRegisterIM. Icon Name is a property that will be used in UI
+            display, the actual usage for Icon Name depends on the UI Module
+            implementation. For fcitx-classic-ui, it will be used as the original
+            png file name; for fcitx-kimpanel-ui, it will be used with a "fcitx-"
+            prefix and look for icon in system icon themes.
+        </p><p>
+            Init will be called when a input method being switched to. ResetIM is
+            usually being called in ResetInput. DoInput is the key function, which
+            process the key event. And if the return state is IRV_DISPLAY_CANDWORDS,
+            the GetCandWords will be called. Save will be called when fcitx want to 
+            save the data, usually when logout.
+        </p><p>
+            Priority control the order of input methods, each IM should take care of
+            it's own priority value. If a priority value less than or equal to zero, this
+            input method will not be registered to fcitx.
+        </p></div><div class="article" title="The things that a input method should and should not do."><div class="titlepage"><div><div><h2 class="title"><a name="article-inputmethod-work"></a>The things that a input method should and should not do.</h2></div></div><hr></div><p>
+            Fcitx changes the behavior of Candidate Words handling in 4.1.0. Input method
+            should provide complete candidate words, instead of only a single page of 
+            candidate words. The paging function is implemented by Fcitx, not by every
+            single input method anymore.
+        </p><p>
+            For most CJK input methods, they don't need to implement a separate punctuation
+            function, since there is already a shared punctuation implementation.
+            If there is similar function needed for input method, it should not be implemented in
+            input method, but in a separate module.
+        </p><p>
+            Currently fcitx only supports shared library input method, some people might think it's
+            better to implement input method in a separate process, DBus can be used in this case,
+            but there is no easy way to do this currently.
+        </p></div></div><div class="part" title="Part V. Module"><div class="titlepage"><div><div><h1 class="title"><a name="part-module"></a>Part V. Module</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="article"><a href="#article-event-module">Event Module</a></span></dt><dt><span class="article"><a href="#article-other-module">Other Module</a></span></dt><dt><span class="article"><a href="#article-inter-module-function">Inter Module function call</a></span></dt><dt><span class="article"><a href="#article-existing-module">Existing Useful Module</a></span></dt><dd><dl><dt><span class="section"><a href="#section-dbus-module">1. DBus</a></span></dt><dt><span class="section"><a href="#section-x11-module">2. X11</a></span></dt></dl></dd></dl></div><div class="article" title="Event Module"><div class="titlepage"><div><div><h2 class="title"><a name="article-event-module"></a>Event Module</h2></div></div><hr></div><p>
+            Event based Modules in Fcitx are using fd to notify the main-loop whether
+            there is new event or not. Following definition is defined in fcitx/module.h.
+            </p><pre class="programlisting">
+typedef struct _FcitxModule
+{
+    /**
+     * @brief construction function
+     */
+    void* (*Create)(struct _FcitxInstance* instance);
+    /**
+     * @brief set main loop watch fd, no need to implement
+     */
+    void (*SetFD)(void*);
+    /**
+     * @brief main loop event handle, no need to implement
+     */
+    void (*ProcessEvent)(void*);
+    /**
+     * @brief destruct function
+     */
+    void (*Destroy)(void*);
+    /**
+     * @brief reload config, no need to implement
+     */
+    void (*ReloadConfig)(void*);
+} FcitxModule;
+            </pre><p>
+        </p><p>
+            After select from multiple fd, the ProcessEvent will be called and modules will process there
+            own event.
+        </p><p>
+            Module need to update rfds, wfds, efds in FcitxInstance and set the maxfd member in FcitxInstance,
+            After modules process all events, all three fd_set will be set by FD_ZERO
+            and SetFD will be called to set them.
+        </p></div><div class="article" title="Other Module"><div class="titlepage"><div><div><h2 class="title"><a name="article-other-module"></a>Other Module</h2></div></div><hr></div><p>
+            Except Event based modules, all other misc module will use built-in
+            hook to interference the key event processing.
+        </p><p>
+            Currently, there are following usable hooks to interference with key event
+            processing.
+        </p><pre class="programlisting">       
+void RegisterPreInputFilter(struct _FcitxInstance* instance, KeyFilterHook) ;
+void RegisterPostInputFilter(struct _FcitxInstance* instance, KeyFilterHook);
+void RegisterOutputFilter(struct _FcitxInstance* instance, StringFilterHook);
+void RegisterHotkeyFilter(struct _FcitxInstance* instance, HotkeyHook);
+void RegisterResetInputHook(struct _FcitxInstance* instance, FcitxIMEventHook value);
+void RegisterTriggerOnHook(struct _FcitxInstance* instance, FcitxIMEventHook value);
+void RegisterTriggerOffHook(struct _FcitxInstance* instance, FcitxIMEventHook value);
+void RegisterInputFocusHook(struct _FcitxInstance* instance, FcitxIMEventHook value);
+void RegisterInputUnFocusHook(struct _FcitxInstance* instance, FcitxIMEventHook value);
+void RegisterUpdateCandidateWordHook(struct _FcitxInstance* instance, FcitxIMEventHook value);
+        </pre><p>
+            As mentioned in Architecture before, the key event processing is separated into
+            4 phases. PreInput are called before Input Method's DoInput function.
+            PostInput will be called after Input Method's DoInput function, if the key event doesn't get processed yet.
+        </p><p>
+            Hotkey will be processed at last, but it will not be blocked even if input context
+            state is ENG. That's the main difference to PreInput and PostInput. If an addon only have
+            a status need to be toggled, it should use hotkey instead of Input Filter.
+        </p><p>
+            All input state will be set to default if ResetInput is called.
+            Reset input is always usable via hotkey escape.
+        </p></div><div class="article" title="Inter Module function call"><div class="titlepage"><div><div><h2 class="title"><a name="article-inter-module-function"></a>Inter Module function call</h2></div></div><hr></div><p>
+            In order to reusing some common code, Fcitx provides a mechanism to do inter module function
+            call. Although it's call inter module function, but all kinds of addon can provide such functions.
+        </p><p>
+            If a module wants to register some inter module function, first it need a header defines correct
+            macro. Here is part of macro defined in fcitx/module/x11stuff.h
+        </p><pre class="programlisting">
+#define FCITX_X11_NAME "fcitx-x11"
+#define FCITX_X11_GETDISPLAY 0
+#define FCITX_X11_GETDISPLAY_RETURNTYPE Display*
+#define FCITX_X11_ADDXEVENTHANDLER 1
+#define FCITX_X11_ADDXEVENTHANDLER_RETURNTYPE void
+#define FCITX_X11_REMOVEXEVENTHANDLER 2
+#define FCITX_X11_REMOVEXEVENTHANDLER_RETURNTYPE void
+#define FCITX_X11_FINDARGBVISUAL 3
+#define FCITX_X11_FINDARGBVISUAL_RETURNTYPE Visual*
+#define FCITX_X11_INITWINDOWATTR 4
+#define FCITX_X11_INITWINDOWATTR_RETURNTYPE void
+#define FCITX_X11_SETWINDOWPROP 5
+#define FCITX_X11_SETWINDOWPROP_RETURNTYPE void
+#define FCITX_X11_GETSCREENSIZE 6
+#define FCITX_X11_GETSCREENSIZE_RETURNTYPE void
+#define FCITX_X11_MOUSECLICK 7
+#define FCITX_X11_MOUSECLICK_RETURNTYPE void
+#define FCITX_X11_ADDCOMPOSITEHANDLER 8
+#define FCITX_X11_ADDCOMPOSITEHANDLER_RETURNTYPE void
+        </pre><p>
+            fcitx_add_addon_header is provided by FcitxMacro.cmake to get this header installed to
+            the correct place.
+        </p><p>
+            All functions have the same interface, like this:
+        </p><pre class="programlisting">
+void* X11GetDisplay(void* arg, FcitxModuleFunctionArg args);
+        </pre><p>
+            For any addon need to call a inter module function
+            it should add that module as dependency in the configuration file.
+            Addon is loaded or not can be also checked at runtime via GetAddonByName.
+        </p><p>
+            If addon want to call a function in other module, it should use InvokeFunction macro
+            defined in fcitx/module.h.
+        </p><pre class="programlisting">
+InvokeFunction(instance, FCITX_X11, GETDISPLAY, arg);
+        </pre><p>
+            FcitxModuleFunctionArg provides ten void* slot for passing argument, which is
+            enough for passing arguments.
+        </p></div><div class="article" title="Existing Useful Module"><div class="titlepage"><div><div><h2 class="title"><a name="article-existing-module"></a>Existing Useful Module</h2></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="#section-dbus-module">1. DBus</a></span></dt><dt><span class="section"><a href="#section-x11-module">2. X11</a></span></dt></dl></div><div class="section" title="1. DBus"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section-dbus-module"></a>1. DBus</h2></div></div></div><p>
+                If an addon want to use DBus, it can use interface in fcitx-dbus Module. But pay
+                attention, fcitx doesn't use glib main loop, so the addon should only use low-level
+                dbus api.
+            </p></div><div class="section" title="2. X11"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section-x11-module"></a>2. X11</h2></div></div></div><p>
+                If an addon want to provides Xlib based user interface, it should use this
+                module to use shared X11 event loop and other functions.
+            </p></div></div></div><div class="part" title="Part VI. User Interface"><div class="titlepage"><div><div><h1 class="title"><a name="part-userinterface"></a>Part VI. User Interface</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="article"><a href="#article-implement-userinterface">Implement user interface</a></span></dt><dt><span class="article"><a href="#article-use-user-interface-elements">Using user interface elements in module</a></span></dt><dt><span class="article"><a href="#article-use-client-side-userinterface">Using client side user interface</a></span></dt></dl></div><div class="article" title="Implement user interface"><div class="titlepage"><div><div><h2 class="title"><a name="article-implement-userinterface"></a>Implement user interface</h2></div></div><hr></div><p>
+            Unlike Frontend, Input Method, and Module, there can be only
+            one user interface running.
+            way.
+        </p><p>
+            If there is no special requirement, it's not recommended
+            to implement a new user interface. There are already three existing User Interface
+            Addons in Fcitx, one is fcitx-classic-ui, which provides skin support and uses
+            cairo, pango, and xlib for rendering; another one is fcitx-kimpanel-ui, which
+            uses kimpanel protocol via DBus, and it can provides native look-feeling
+            under with kdeplasma-addons-kimpanel, and even more, can provides advance
+            skin support with kimtoy; The third one is fcitx-light-ui, which only use
+            Xft and Xlib for rendering, it intends to require least dependencies and
+            achieve better rendering spend on old machine.
+        </p><p>
+            In order to implement a new user interface, it would be better to use a kimpanel
+            compatible protocol, but not to write a fcitx one, since kimpanel can also benefits
+            other input framework, scim and ibus.
+        </p></div><div class="article" title="Using user interface elements in module"><div class="titlepage"><div><div><h2 class="title"><a name="article-use-user-interface-elements"></a>Using user interface elements in module</h2></div></div><hr></div><p>
+            Fcitx provides several abstraction of user interface element, in order to display
+            them on different user interface implementation. Basically, there is a input
+            window, with four text field.
+        </p><div class="table"><a name="id4523808"></a><p class="title"><b>Table 1. Standard Input Window Layout</b></p><div class="table-contents"><table summary="Standard Input Window Layout" border="1"><colgroup><col align="left"><col align="left"></colgroup><tbody><tr><td align="left">Auxiliary Text Up</td><td align="left">Preedit String</td></tr><tr><td align="left">Auxiliary Text Down</td><td align="left">Candidate Words</td></tr></tbody></table></div></div><br class="table-break"><p>
+            There is also a user interface element called status, basically it defines a switch
+            button. The icon name rule can be defined by user interface itself. (Defined in fcitx/ui.h)
+            </p><pre class="programlisting">
+    /**
+     * @brief Fcitx Status icon to be displayed on the UI
+     **/
+    typedef struct _FcitxUIStatus {
+        /**
+         * @brief status name, will not displayed on the UI.
+         **/
+        char name[MAX_STATUS_NAME + 1];
+        /**
+         * @brief short desription for this status, can be displayed on the UI
+         **/
+        char shortDescription[MAX_STATUS_SDESC + 1];
+        /**
+         * @brief long description for this status, can be displayed on the UI
+         **/
+        char longDescription[MAX_STATUS_LDESC + 1];
+        /**
+         * @brief toogle function
+         **/
+        void (*toggleStatus)(void *arg);
+        /**
+         * @brief get current value function
+         **/
+        boolean (*getCurrentStatus)(void *arg);
+        /**
+         * @brief private data for the UI implementation
+         **/
+        void *priv;
+        /**
+         * @brief extra argument for tooglefunction
+         **/
+        void* arg;
+    } FcitxUIStatus;
+            </pre><p>
+        </p><p>
+            Short Description and Long Description is tend to be display on the user interface, the addon
+            should have it translated before register the status.
+        </p><p>
+            Another user interface element is a menu, which currently only support by fcitx-classic-ui
+            and fcitx-light-ui. Due to the limitation of kimpanel, it cannot support fcitx style menu
+            currently.
+             (Defined in fcitx/ui.h)
+            </p><pre class="programlisting">
+    /**
+     * @brief a menu entry in a menu.
+     **/
+    typedef struct _MenuShell
+    {
+        /**
+         * @brief The displayed string
+         **/
+        char tipstr[MAX_MENU_STRING_LENGTH + 1];
+        /**
+         * @brief Can be used by ui to mark it's selected or not.
+         **/
+        int  isselect;
+        /**
+         * @brief The type of menu shell
+         **/
+        MenuShellType type;
+        /**
+         * @brief the submenu to this entry
+         **/
+        struct _FcitxUIMenu *subMenu;
+    } MenuShell;
+
+    /**
+     * @brief Fcitx Menu Component, a UI doesn't need to support it,
+     *        This struct is used by other module to register a menu.
+     **/
+    typedef struct _FcitxUIMenu {
+        /**
+         * @brief shell entries for this menu
+         **/
+        UT_array shell;
+        /**
+         * @brief menu name, can be displayed on the ui
+         **/
+        char name[MAX_MENU_STRING_LENGTH + 1];
+        /**
+         * @brief you might want to bind the menu on a status icon, but this is only a hint,
+         * depends on the ui implementation
+         **/
+        char candStatusBind[MAX_STATUS_NAME + 1];
+        /**
+         * @brief update the menu content
+         **/
+        UpdateMenuShellFunction UpdateMenuShell;
+        /**
+         * @brief function for process click on a menu entry
+         **/
+        MenuActionFunction MenuAction;
+        /**
+         * @brief private data for this menu
+         **/
+        void *priv;
+        /**
+         * @brief ui implementation private
+         **/
+        void *uipriv;
+        /**
+         * @brief this is sub menu or not
+         **/
+        boolean isSubMenu;
+        /**
+         * @brief mark of this menu
+         **/
+        int mark;
+    } FcitxUIMenu;
+            </pre><p>
+        </p><p>
+            Module who want to use menu or status icon should use RegisterStatus and 
+            RegisterMenu function. A User interface in order to support status icon or
+            menu, should implement UpdateStatus, RegisterStatus, RegisterMenu callbacks.
+        </p></div><div class="article" title="Using client side user interface"><div class="titlepage"><div><div><h2 class="title"><a name="article-use-client-side-userinterface"></a>Using client side user interface</h2></div></div><hr></div><p>
+            There are some special case, which the common user interface cannot works.
+            Input method in fbterm is a good case. In order to support this, frontend
+            should correct set the CAPACITY_CLIENT_SIDE_UI and implements UpdateClientSideUI
+            callback. If anytime the user interface get updated, UpdateClientSideUI
+            will be called and the client side can draw the user interface itself.
+        </p></div></div><div class="part" title="Part VII. Convention"><div class="titlepage"><div><div><h1 class="title"><a name="part-convention"></a>Part VII. Convention</h1></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="article"><a href="#article-file-and-directory">File and Directory Convention</a></span></dt><dt><span class="article"><a href="#article-configuration-file">Configuration File format</a></span></dt></dl></div><div class="article" title="File and Directory Convention"><div class="titlepage"><div><div><h2 class="title"><a name="article-file-and-directory"></a>File and Directory Convention</h2></div></div><hr></div><p>
+            Fcitx have two prefixes of directory, one is named "PREFIX", which is configured
+            during building, the other is "USERPREFIX", which is based on XDG environment
+            variable. Normally, PREFIX is /usr/share/fcitx, and USERPREFIX is ~/.config/fcitx
+        </p><p>
+            In order to let Fcitx Configuration Tool find configuration files automatically,
+            and to let Fcitx load addon correctly, addon need to put its configuration files under
+            correct path with correct name.
+        </p><p>
+            Each addon has a configuration file, and it should be installed under PREFIX/addon/.
+            This configuration file defines its name, category, library name, type, and priority.
+            Filename need to be addon-name.conf.
+        </p><p>
+            If addon can be configured with various options, it need a configuration description file,
+            which should be installed under PREFIX/configdesc/, with name [addon-name].desc.
+            The corresponding configuration file should be placed under USERPREFIX/conf/, with
+            the name [addon-name].config.
+        </p><p>
+            There are two case If addon has some data file to load/save. If it only has
+            one file, it can place the data file under PREFIX/data. If addon have more than one data file,
+            it would be better to create a separate directory to place them.
+        </p></div><div class="article" title="Configuration File format"><div class="titlepage"><div><div><h2 class="title"><a name="article-configuration-file"></a>Configuration File format</h2></div></div><hr></div><p>
+            A Ini file in Fcitx contains at least one group, each group contains several options.
+            A group is defined in "[GroupName]" format, an options is defined by "Key=Value".
+        </p><p>
+            All configuration file should have a configuration description file in following format.
+            </p><pre class="programlisting">
+                [GroupName/OptionName]
+                Type=Option Type
+                Description=Description String
+                DefaultValue=value
+                
+                [DescriptionFile]
+                LocaleDomain=Domain
+            </pre><p>
+            DefaultValue is optional, but if configuration file need to be generated from nothing,
+            all options should have a default value.
+        </p><p>
+            The option value type can be "File", "Font", "Enum", "String", "I18NString", "Boolean", "Color",
+            "Integer".
+        </p><p>
+            All the types will be display in the configuration tool in corresponding way, "Boolean" will be
+            a checkbox, "String" will be a textbox, etc.
+        </p><p>
+            "Description" is translatable, and the string should lies in the defined domain.
+        </p></div></div></div></body></html>

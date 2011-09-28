@@ -1,0 +1,67 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>The things that a input method should and should not do.</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-inputmethod.html" title="Part IV. Input Method">
+<link rel="prev" href="article-inputmethod.html" title="Input Method">
+<link rel="next" href="part-module.html" title="Part V. Module">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">The things that a input method should and should not do.</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="article-inputmethod.html">Prev</a> </td>
+<th width="60%" align="center">Part IV. Input Method</th>
+<td width="20%" align="right"> <a accesskey="n" href="part-module.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="The things that a input method should and should not do.">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-inputmethod-work"></a>The things that a input method should and should not do.</h2></div></div>
+<hr>
+</div>
+<p>
+            Fcitx changes the behavior of Candidate Words handling in 4.1.0. Input method
+            should provide complete candidate words, instead of only a single page of 
+            candidate words. The paging function is implemented by Fcitx, not by every
+            single input method anymore.
+        </p>
+<p>
+            For most CJK input methods, they don't need to implement a separate punctuation
+            function, since there is already a shared punctuation implementation.
+            If there is similar function needed for input method, it should not be implemented in
+            input method, but in a separate module.
+        </p>
+<p>
+            Currently fcitx only supports shared library input method, some people might think it's
+            better to implement input method in a separate process, DBus can be used in this case,
+            but there is no easy way to do this currently.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="article-inputmethod.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-inputmethod.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="part-module.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Input Method </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Part V. Module</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Make addon configurable</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Fcitx Developer Handbook">
+<link rel="up" href="part-addon.html" title="Part II. Addon">
+<link rel="prev" href="article-register-addon.html" title="Register a addon in Fcitx">
+<link rel="next" href="part-frontend.html" title="Part III. Frontend">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Make addon configurable</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="article-register-addon.html">Prev</a> </td>
+<th width="60%" align="center">Part II. Addon</th>
+<td width="20%" align="right"> <a accesskey="n" href="part-frontend.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="article" title="Make addon configurable">
+<div class="titlepage">
+<div><div><h2 class="title">
+<a name="article-configurable-addon"></a>Make addon configurable</h2></div></div>
+<hr>
+</div>
+<p>
+            If addon need a multi option configuration file, addon should provides a configuration description file first.
+            The filename need to same with the addon name.
+        </p>
+<p>
+            If addon requires a series of sub-configuration file, or some simple text file, the addon configuration file
+            need to contains SubConfig key to list wildcard file name.
+            </p>
+<pre class="programlisting">
+[Addon]
+Name=fcitx-table
+_GeneralName=Table
+_Comment=Table Input Method for Fcitx
+Category=InputMethod
+Enabled=True
+Library=fcitx-table.so
+Type=SharedLibrary
+Dependency=fcitx-pinyin,fcitx-punc
+SubConfig=Table:configfile:table/*.conf:table.desc,fcitx:domain
+            </pre>
+<p>
+            fcitx-table has several table configuration files, SubConfig is defined in following format.
+            </p>
+<pre class="programlisting">
+            SubConfig=SubConfig1,Subconfig2,...,Subconfig3
+            </pre>
+<p>
+            Each SubConfig is defined in following format:
+            </p>
+<pre class="programlisting">
+            Name:type:description
+            </pre>
+<p>
+            Currently, type can be "configfile", "native", or "domain". "native" defines a simple text
+            filename in description, which cannot have wildcard in filename. Description of "configfile"
+            contains filename with wildcard and configuration description file name. "domain" defines
+            gettext domain of this module. Names of "configfile" and "native" are translatable, translation should
+            live in the "domain" defined by subconfig.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="article-register-addon.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="part-addon.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="part-frontend.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Register a addon in Fcitx </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Part III. Frontend</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
